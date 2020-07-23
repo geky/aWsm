@@ -4,25 +4,6 @@ cache:
   directories:
     - $HOME/.cache/apt
 
-#addons:
-#  apt:
-#    sources:
-#      - sourceline: 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main'
-#        key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
-#    packages:
-#      - llvm-9-dev
-#      - clang-9
-#      - libc++-dev
-#      - libc++abi-dev
-#
-#addons:
-#  apt:
-#    packages:
-#      - llvm-9-dev
-#      - clang-9-dev
-#      - libc++-dev
-#      - libc++abi-dev
-
 env:
   global:
     # This is the -Werror of Rust
@@ -32,9 +13,6 @@ env:
 
 install:
   # Install LLVM
-  #- wget https://apt.llvm.org/llvm.sh
-  #- chmod +x llvm.sh
-  #- sudo ./llvm.sh $LLVM_VERSION
   - sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" bash $LLVM_VERSION
   - sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-$LLVM_VERSION 100
   - sudo update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-$LLVM_VERSION 100
@@ -48,4 +26,7 @@ script:
   - cargo build
   # Test compile any features
   - cargo build --features "cortex-m-attrs"
-
+  # Now lets test the code benches
+  - |
+    cd code_benches
+    python run.py
