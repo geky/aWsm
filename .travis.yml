@@ -1,8 +1,7 @@
 language: rust
 cache:
+  apt: true
   cargo: true
-  directories:
-    - $HOME/.cache/apt
 
 env:
   global:
@@ -21,12 +20,22 @@ install:
   - PATH=/usr/bin:$PATH
   - llvm-config --version
 
+#  # We're going to use the WASI SDK here because Travis does not give
+#  # us enough time to compile LLVM
+#  - wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-6/wasi-sdk-6.0-linux.tar.gz
+#  - tar xvf wasi-sdk-6.0-linux.tar.gz
+#  - mkdir -p wasmception/dist
+#  - ln -s $(realpath wasi-sdk-6.0/opt/wasi-sdk/bin) wasmception/dist/bin
+#  - ln -s $(realpath wasi-sdk-6.0/opt/wasi-sdk/share/wasi-sysroot) wasmception/sysroot
+
 script:
   # Make sure we compile
   - cargo build
   # Test compile any features
   - cargo build --features "cortex-m-attrs"
+  - cd wasmception
+  - make
+  - cd ..
   # Now lets test the code benches
-  - |
-    cd code_benches
-    python3 run.py
+  - cd code_benches
+  - python3 run.py
