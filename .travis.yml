@@ -6,6 +6,8 @@ cache:
 
 addons:
   apt:
+    sources:
+      - llvm-toolchain-xenial-9
     packages:
       - llvm-9-dev
       - clang-9
