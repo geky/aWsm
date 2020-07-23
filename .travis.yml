@@ -8,13 +8,13 @@ env:
   global:
     # This is the -Werror of Rust
     - RUSTFLAGS="--deny warnings"
-    # Used for installation
-    - LLVM_VERSION=9
+#    # Used for installation
+#    - LLVM_VERSION=9
 
 install:
   # Install LLVM
   - sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
-  - sudo update-alternatives --install /usr/bin/cc clang /usr/bin/clang 100
+  - sudo update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100
   #- sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-$LLVM_VERSION 100
   #- sudo update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-$LLVM_VERSION 100
   - sudo apt install libc++-dev libc++abi-dev --yes
