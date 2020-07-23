@@ -1,0 +1,16 @@
+language: rust
+cache: cargo
+
+env:
+  global:
+    # This is the -Werror of Rust
+    - RUSTFLAGS="--deny warnings"
+
+install: []
+
+script:
+  # Make sure we compile
+  - cargo build --verbose
+  # Test compile any features
+  - cargo build --features "cortex-m-attrs"
+
