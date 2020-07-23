@@ -7,17 +7,17 @@ cache:
 env:
   global:
     # This is the -Werror of Rust
-    #- RUSTFLAGS="--deny warnings"
+    - RUSTFLAGS="--deny warnings"
     # Used for installation
-    #- LLVM_VERSION=9
+    - LLVM_VERSION=9
 
 install:
   # Install LLVM
-  #- echo $LLVM_VERSION
-  #- wget https://apt.llvm.org/llvm.sh
-  #- chmod +x llvm.sh
-  #- sudo ./llvm.sh $LLVM_VERSION
-  - sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+  - echo $LLVM_VERSION
+  - wget https://apt.llvm.org/llvm.sh
+  - chmod +x llvm.sh
+  - sudo ./llvm.sh $LLVM_VERSION
+  #- sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
   #- llvm-config --version
   #- echo $LLVM_VERSION
   #- LLVM_VERSION=$(llvm-config --version | cut -d '.' -f 1)
