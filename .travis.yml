@@ -49,6 +49,7 @@ install:
 #  - llvm-config --version
 #  - echo $PATH
 #  - export PATH=/usr/bin:$PATH
+  - echo $PATH
   - clang --version
   - llvm-config --version
 
