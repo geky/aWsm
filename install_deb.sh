@@ -1,5 +1,5 @@
 #!/bin/bash
-# Installs dependencies, builds Silverfish, and places it into your path
+# Installs dependencies, builds aWsm, and places it into your path
 # Be sure to validate the Rust and LLVM install scripts we invoke below!
 sudo apt install build-essential --yes
 curl https://sh.rustup.rs -sSf | sh
@@ -11,5 +11,5 @@ sudo update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llv
 sudo apt install libc++-dev libc++abi-dev --yes
 cargo build --release
 mkdir -p $HOME/bin
-cp -t $HOME/bin target/release/silverfish
+cp -t $HOME/bin target/release/awsm
 source $HOME/bin

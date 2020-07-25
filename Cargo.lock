@@ -32,6 +32,18 @@ version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "awsm"
+version = "0.1.0"
+dependencies = [
+ "flexi_logger 0.14.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "llvm-alt 0.5.0 (git+https://github.com/Others/llvm-rs.git)",
+ "llvm-sys 90.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "structopt 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "wasmparser 0.39.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "bitflags"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -259,18 +271,6 @@ dependencies = [
 name = "semver-parser"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "silverfish"
-version = "0.1.0"
-dependencies = [
- "flexi_logger 0.14.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "llvm-alt 0.5.0 (git+https://github.com/Others/llvm-rs.git)",
- "llvm-sys 90.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "structopt 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "wasmparser 0.39.2 (registry+https://github.com/rust-lang/crates.io-index)",
-]
 
 [[package]]
 name = "strsim"

@@ -9,10 +9,10 @@ import glob
 import itertools as it
 
 # Note: This is a major configuration option, you probably want to set this if you're doing anything advanced
-SILVERFISH_TARGET = None
-# SILVERFISH_TARGET = "thumbv7em-none-unknown-eabi"
-# SILVERFISH_TARGET = "x86_64-apple-macosx10.15.0"
-# SILVERFISH_TARGET = "x86_64-pc-linux-gnu"
+AWSM_TARGET = None
+# AWSM_TARGET = "thumbv7em-none-unknown-eabi"
+# AWSM_TARGET = "x86_64-apple-macosx10.15.0"
+# AWSM_TARGET = "x86_64-pc-linux-gnu"
 
 # CSV file name
 CSV_NAME = "benchmarks.csv"
@@ -22,14 +22,14 @@ if os.path.dirname(sys.argv[0]):
     os.chdir(os.path.dirname(sys.argv[0]))
 # Absolute path to the `code_benches` directory
 BENCH_ROOT = os.getcwd()
-# Absolute path to the `silverfish` directory
+# Absolute path to the `awsm` directory
 ROOT_PATH = os.path.dirname(BENCH_ROOT)
 
 RUNTIME_PATH = ROOT_PATH + "/runtime"
 if "--release" in sys.argv:
-    SILVERFISH_PATH = ROOT_PATH + "/target/release/silverfish"
+    AWSM_PATH = ROOT_PATH + "/target/release/awsm"
 else:
-    SILVERFISH_PATH = ROOT_PATH + "/target/debug/silverfish"
+    AWSM_PATH = ROOT_PATH + "/target/debug/awsm"
 
 WASMCEPTION_PATH = ROOT_PATH + "/wasmception"
 
@@ -51,7 +51,7 @@ RUN_COUNT = 10
 ENABLE_DEBUG_SYMBOLS = True
 
 COMPILE_WASM_ONLY = False
-if SILVERFISH_TARGET == "thumbv7em-none-unknown-eabi" and not COMPILE_WASM_ONLY:
+if AWSM_TARGET == "thumbv7em-none-unknown-eabi" and not COMPILE_WASM_ONLY:
     print("run.py: thumbv7em-none-unknown-eabi wasm->bc is target specific, refusing to compile native code!")
     COMPILE_WASM_ONLY = True
 
@@ -102,7 +102,7 @@ programs = [
     # Program("app_nn", [], 2 ** 14, custom_arguments=["-std=c99", "-Wno-unknown-attributes", "-DARM_MATH_CM3", "-I/Users/peachg/Projects/CMSIS_5_NN/CMSIS_5/CMSIS/DSP/Include", "-I/Users/peachg/Projects/CMSIS_5_NN/CMSIS_5/CMSIS/Core/Include", "-I/Users/peachg/Projects/CMSIS_5_NN/CMSIS_5/CMSIS/NN/Include"]),
 #    Program("app_pid", ["-std=c++11", "-Wall"], 2 ** 8, custom_arguments=[], is_cpp=True),
 #    Program("app_tiny_ekf", ["-std=c++11", "-Wall"], 2 ** 14, custom_arguments=[], is_cpp=True),
-#    Program("app_tinycrypt", [], 2 ** 15 + 2**14, custom_arguments=[ "-Wall", "-Wpedantic", "-Wno-gnu-zero-variadic-macro-arguments", "-std=c11", "-I/Users/peachg/Projects/silverfish/code_benches/app_tinycrypt/", "-DENABLE_TESTS", "-I."]),
+#    Program("app_tinycrypt", [], 2 ** 15 + 2**14, custom_arguments=[ "-Wall", "-Wpedantic", "-Wno-gnu-zero-variadic-macro-arguments", "-std=c11", "-I/Users/peachg/Projects/awsm/code_benches/app_tinycrypt/", "-DENABLE_TESTS", "-I."]),
     # Program("app_v9", [], 2 ** 18, custom_arguments=[], do_lto=False),
 
     # == MiBench ==
@@ -205,17 +205,17 @@ def compile_to_wasm(program):
 
 # Compile the WASM in `program`'s directory into llvm bytecode
 def compile_wasm_to_bc(program):
-    if SILVERFISH_TARGET is None:
+    if AWSM_TARGET is None:
         target_flag = ""
     else:
-        target_flag = "--target " + SILVERFISH_TARGET
+        target_flag = "--target " + AWSM_TARGET
 
-    command = "{silverfish} {target} bin/{pname}.wasm -o bin/{pname}.bc"\
-        .format(silverfish=SILVERFISH_PATH, target=target_flag, pname=program.name)
+    command = "{awsm} {target} bin/{pname}.wasm -o bin/{pname}.bc"\
+        .format(awsm=AWSM_PATH, target=target_flag, pname=program.name)
     sp.check_call(command, shell=True, cwd=program.name)
     # Also compile an unsafe version, so we can see the performance difference
-    command = "{silverfish} {target} -u bin/{pname}.wasm -o bin/{pname}_us.bc"\
-        .format(silverfish=SILVERFISH_PATH, target=target_flag, pname=program.name)
+    command = "{awsm} {target} -u bin/{pname}.wasm -o bin/{pname}_us.bc"\
+        .format(awsm=AWSM_PATH, target=target_flag, pname=program.name)
     sp.check_call(command, shell=True, cwd=program.name)
 
 
@@ -230,10 +230,10 @@ def compile_wasm_to_executable(program, exe_postfix, memory_impl, unsafe_impls=F
     if ENABLE_DEBUG_SYMBOLS:
         opt += " -g"
 
-    if SILVERFISH_TARGET is None:
+    if AWSM_TARGET is None:
         target_flag = ""
     else:
-        target_flag = "-target " + SILVERFISH_TARGET
+        target_flag = "-target " + AWSM_TARGET
 
     command = "clang -lm {target} {opt} {bc_file} {runtime}/runtime.c {runtime}/libc/libc_backing.c {runtime}/memory/{mem_impl} -o bin/{pname}_{postfix}"\
         .format(target=target_flag, opt=opt, bc_file=bc_file, pname=program.name, runtime=RUNTIME_PATH, mem_impl=memory_impl, postfix=exe_postfix)

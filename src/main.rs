@@ -21,7 +21,7 @@ mod wasm;
 use crate::wasm::WasmModule;
 
 #[derive(StructOpt, Debug)]
-#[structopt(name = "silverfish")]
+#[structopt(name = "awsm")]
 pub struct Opt {
     /// Input wasm file
     #[structopt(name = "input", parse(from_os_str))]
@@ -53,7 +53,7 @@ fn main() -> io::Result<()> {
     flexi_logger::Logger::with_str(log_spec).start().unwrap();
 
     let opt = Opt::from_args();
-    info!("running silverfish({:?}, {:?})", opt.input, opt.output);
+    info!("running awsm({:?}, {:?})", opt.input, opt.output);
 
     let input_path: &Path = &opt.input;
     let input_filename = input_path.file_name().and_then(|s| s.to_str()).unwrap();
@@ -75,6 +75,6 @@ fn main() -> io::Result<()> {
         .unwrap_or_else(|| "output.bc".to_string());
     process_to_llvm(&opt, module, &output_path)?;
 
-    info!("silverfish finished successfully");
+    info!("awsm finished successfully");
     Ok(())
 }

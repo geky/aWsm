@@ -26,8 +26,8 @@ Wasm provides a number of benefits outside of the web including:
 	This has the potential to provide a universal specification of computation that can execute in the cloud, on the edge, or in an embedded device.
 
 **A note on naming.**
-aWsm started out as the `silverfish` compiler, the brainchild of Gregor Peach when he was a researcher in the group.
-There are still quite a few lingering `silverfish` references.
+aWsm started out as the `awsm` compiler, the brainchild of Gregor Peach when he was a researcher in the group.
+There are still quite a few lingering `awsm` references.
 Please have patience as we update those to `awsm`.
 
 ## Why aWsm?
@@ -59,7 +59,7 @@ aWsm 0.1.0
 Gregor Peach <gregorpeach@gmail.com>
 
 USAGE:
-    silverfish [FLAGS] [OPTIONS] <input>
+    awsm [FLAGS] [OPTIONS] <input>
 
 FLAGS:
     -h, --help                           Prints help information
@@ -86,7 +86,7 @@ cd awsm
 ./install_deb.sh
 ```
 
-The compiler can now be run via `silverfish`
+The compiler can now be run via `awsm`
 
 The tests can run with
 
@@ -111,7 +111,7 @@ git clone https://github.com/gwsystems/awsm.git
 cd awsm
 cargo build --release
 ```
-6. The awsm binary is built at `target/release/silverfish`. Copy this to the appropriaate place for your platform and add to your PATH if neccessary.
+6. The awsm binary is built at `target/release/awsm`. Copy this to the appropriaate place for your platform and add to your PATH if neccessary.
 
 # Limitations and Assumptions
 

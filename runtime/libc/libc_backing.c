@@ -381,16 +381,16 @@ i32 wasm_lseek(i32 filedes, i32 file_offset, i32 whence) {
 u32 wasm_mmap(i32 addr, i32 len, i32 prot, i32 flags, i32 fd, i32 offset) {
 	if (addr != 0) {
 		printf("parameter void *addr is not supported!\n");
-		silverfish_assert(0);
+		awsm_assert(0);
 	}
 
 	if (fd != -1) {
 		printf("file mapping is not supported!\n");
-		silverfish_assert(0);
+		awsm_assert(0);
 	}
 
-	silverfish_assert(len % MMAP_GRANULARITY == 0);
-    silverfish_assert(WASM_PAGE_SIZE % MMAP_GRANULARITY == 0);
+	awsm_assert(len % MMAP_GRANULARITY == 0);
+    awsm_assert(WASM_PAGE_SIZE % MMAP_GRANULARITY == 0);
 
     printf("allocating %d\n", len);
 
@@ -493,7 +493,7 @@ u32 wasm_fcntl(u32 fd, u32 cmd, u32 arg_or_lock_ptr) {
         case WF_SETLK:
             return 0;
         default:
-            silverfish_assert(0);
+            awsm_assert(0);
     }
 }
 
@@ -553,7 +553,7 @@ i32 wasm_get_time(i32 clock_id, i32 timespec_off) {
             real_clock = CLOCK_PROCESS_CPUTIME_ID;
             break;
         default:
-            silverfish_assert(0);
+            awsm_assert(0);
     }
 
     struct wasm_time_spec* timespec = get_memory_ptr_void(timespec_off, sizeof(struct wasm_time_spec));
@@ -608,7 +608,7 @@ i32 inner_syscall_handler(i32 n, i32 a, i32 b, i32 c, i32 d, i32 e, i32 f) {
         case SYS_EXIT_GROUP: return wasm_exit_group(a);
     }
     printf("syscall %d (%d, %d, %d, %d, %d, %d)\n", n, a, b, c, d, e, f);
-    silverfish_assert(0);
+    awsm_assert(0);
     return 0;
 }
 
@@ -645,7 +645,7 @@ INLINE void env_a_and_64(i32 p_off, u64 v) {
 }
 
 INLINE void env_a_or_64(i32 p_off, i64 v) {
-    silverfish_assert(sizeof(i64) == sizeof(uint64_t));
+    awsm_assert(sizeof(i64) == sizeof(uint64_t));
     uint64_t* p = get_memory_ptr_void(p_off, sizeof(i64));
     *p |= v;
 
@@ -667,7 +667,7 @@ INLINE void env_a_or_64(i32 p_off, i64 v) {
 //}
 //
 i32 env_a_cas(i32 p_off, i32 t, i32 s) {
-    silverfish_assert(sizeof(i32) == sizeof(volatile int));
+    awsm_assert(sizeof(i32) == sizeof(volatile int));
     volatile int* p = get_memory_ptr_void(p_off, sizeof(i32));
 
 	__asm__( "lock ; cmpxchg %3, %1"
@@ -676,7 +676,7 @@ i32 env_a_cas(i32 p_off, i32 t, i32 s) {
 }
 
 void env_a_or(i32 p_off, i32 v) {
-    silverfish_assert(sizeof(i32) == sizeof(volatile int));
+    awsm_assert(sizeof(i32) == sizeof(volatile int));
     volatile int* p = get_memory_ptr_void(p_off, sizeof(i32));
 	__asm__( "lock ; or %1, %0"
 		: "=m"(*p) : "r"(v) : "memory" );
@@ -690,7 +690,7 @@ void env_a_or(i32 p_off, i32 v) {
 
 i32 env_a_swap(i32 x_off, i32 v)
 {
-    silverfish_assert(sizeof(i32) == sizeof(volatile int));
+    awsm_assert(sizeof(i32) == sizeof(volatile int));
     volatile int* x = get_memory_ptr_void(x_off, sizeof(i32));
 
 	__asm__( "xchg %0, %1" : "=r"(v), "=m"(*x) : "0"(v) : "memory" );
@@ -699,7 +699,7 @@ i32 env_a_swap(i32 x_off, i32 v)
 
 i32 env_a_fetch_add(i32 x_off, i32 v)
 {
-    silverfish_assert(sizeof(i32) == sizeof(volatile int));
+    awsm_assert(sizeof(i32) == sizeof(volatile int));
     volatile int* x = get_memory_ptr_void(x_off, sizeof(i32));
 
 	__asm__( "lock ; xadd %0, %1" : "=r"(v), "=m"(*x) : "0"(v) : "memory" );
@@ -707,21 +707,21 @@ i32 env_a_fetch_add(i32 x_off, i32 v)
 }
 
 void env_a_inc(i32 x_off) {
-    silverfish_assert(sizeof(i32) == sizeof(volatile int));
+    awsm_assert(sizeof(i32) == sizeof(volatile int));
     volatile int* x = get_memory_ptr_void(x_off, sizeof(i32));
 
 	__asm__( "lock ; incl %0" : "=m"(*x) : "m"(*x) : "memory" );
 }
 
 void env_a_dec(i32 x_off) {
-    silverfish_assert(sizeof(i32) == sizeof(volatile int));
+    awsm_assert(sizeof(i32) == sizeof(volatile int));
     volatile int* x = get_memory_ptr_void(x_off, sizeof(i32));
 
 	__asm__( "lock ; decl %0" : "=m"(*x) : "m"(*x) : "memory" );
 }
 
 void env_a_store(i32 p_off, i32 x) {
-    silverfish_assert(sizeof(i32) == sizeof(volatile int));
+    awsm_assert(sizeof(i32) == sizeof(volatile int));
     volatile int* p = get_memory_ptr_void(p_off, sizeof(i32));
 	__asm__ __volatile__(
 		"mov %1, %0 ; lock ; orl $0,(%%esp)" : "=m"(*p) : "r"(x) : "memory" );
@@ -733,7 +733,7 @@ void env_do_spin(i32 i) {
 
 void env_do_crash(i32 i) {
     printf("crashing: %d\n", i);
-    silverfish_assert(0);
+    awsm_assert(0);
 }
 
 int env_a_ctz_32(i32 x) {
