@@ -101,7 +101,7 @@ jobs:
           for ((i=2; i<$NF; i++))
           do
               # find total runtime
-              NAME="${{matrix.libc}}-$(awk -F, -vi=$i 'NR==1 {gsub(/ /, "-"); print $(i+1)}' benchmarks.csv)"
+              NAME="${{matrix.libc}}-$(awk -F, -vi=$i 'NR==1 {gsub(/ /, "-"); gsub(/\<wasm-/, ""); print $(i+1)}' benchmarks.csv)"
               RUNTIME=$(awk -F, -vi=$i 'NR>1 {sum += $(i+1)} END {printf "%.3f\n",sum/(NR-1)}' benchmarks.csv)
 
               # get previous?
@@ -109,7 +109,7 @@ jobs:
                   https://api.github.com/repos/$GITHUB_REPOSITORY/status/master \
                   | jq -re "select(.sha != \"$GITHUB_SHA\")
                       | .statuses[] | select(.context == \"bench/$NAME\").description
-                      | capture(\"Runtime: (?<runtime>[0-9\\\\.]+)\").runtime" \
+                      | capture(\"Runtime is (?<runtime>[0-9\\\\.]+)\").runtime" \
                   || echo 0)
 
               echo NAME=$NAME
@@ -117,7 +117,7 @@ jobs:
               echo PREV=$PREV
 
               # build status
-              STATUS="Runtime: ${RUNTIME}x"
+              STATUS="Runtime is ${RUNTIME}x native"
               if awk "BEGIN {exit! $PREV != 0}"
               then
                   STATUS="$STATUS ($(awk "BEGIN {printf \"%+.2f\",100*($RUNTIME-$PREV)/$PREV}")%)"
