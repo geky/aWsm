@@ -102,7 +102,8 @@ jobs:
               RUNTIME=$(awk -F, -vi=$i 'NR>1 {sum += $(i+2)} END {printf "%.3f\n",sum}' benchmarks.csv)
 
               # get previous?
-              PREV=$(curl -u "$BOT_STATUSES" https://api.github.com/repos/$GITHUB_REPOSITORY/status/master \
+              PREV=$(curl -u "$BOT_STATUSES" \
+                  https://api.github.com/repos/$GITHUB_REPOSITORY/status/master \
                   | jq -re "select(.sha != \"$GITHUB_SHA\")
                       | .statuses[] | select(.context == \"bench/$NAME\").description
                       | capture(\"Runtime: (?<runtime>[0-9\\\\.]+)\").runtime" \
@@ -116,7 +117,7 @@ jobs:
               fi
 
               # Post status
-              curl -u "$BOT_STATUSES" -X POST \A
+              curl -u "$BOT_STATUSES" -X POST \
                   https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA \
                   -d "{
                       \"context\": \"bench/$NAME\",
