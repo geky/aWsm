@@ -113,10 +113,6 @@ jobs:
               echo RUNTIME=$RUNTIME
               echo PREV=$PREV
 
-              curl -sS -u "$BOT_STATUSES" \
-                  https://api.github.com/repos/$GITHUB_REPOSITORY/status/master
-                  | jq -re "select(.sha != \"$GITHUB_SHA\")"
-
               # build status
               STATUS="Runtime: ${RUNTIME}s"
               if [ "$PREV" -ne 0 ]
