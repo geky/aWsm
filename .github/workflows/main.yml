@@ -1,5 +1,5 @@
 # CI workflow
-name: Test
+name: test
 on: [push, pull_request]
 
 env:
@@ -8,29 +8,37 @@ env:
   # used during LLVM installation
   LLVM_VERSION: 9
 
+# bring up environment
+_: &setup
+  - name: Install
+    run: |
+      sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" bash $LLVM_VERSION
+      sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-$LLVM_VERSION 100
+      sudo update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-$LLVM_VERSION 100
+      sudo apt install libc++-dev libc++abi-dev --yes
+      # not really sure why we need to modify this
+      PATH=/usr/bin:$PATH
+      llvm-config --version
+
+  - uses: actions/checkout@v2
+
+  - name: Compile
+    run: |
+      cargo build
+
+  - name: Preliminary tests
+    # note we skip code_benches, we run code_benches/run.py ourselves
+    # to pass explicit flags
+    run: |
+      cargo test -- --skip code_benches
+
+# job control
 jobs:
-  test:
+  test-wasi-sdk:
     runs-on: ubuntu-latest
+    steps: [*setup]
 
-    steps:
-    - name: Install
-      run: |
-        sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" bash $LLVM_VERSION
-        sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-$LLVM_VERSION 100
-        sudo update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-$LLVM_VERSION 100
-        sudo apt install libc++-dev libc++abi-dev --yes
-        # not really sure why we need to modify this
-        PATH=/usr/bin:$PATH
-        llvm-config --version
-
-    - uses: actions/checkout@v2
-
-    - name: Compile
-      run: |
-        cargo build
-
-    - name: Preliminary tests
-      # note we skip code_benches, we run code_benches/run.py ourselves
-      # to pass explicit flags
-      run: |
-        cargo test -- --skip code_benches
+  test-wasmception:
+    runs-on: ubuntu-latest
+    steps: [*setup]
+    
