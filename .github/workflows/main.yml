@@ -54,6 +54,8 @@ jobs:
       - name: Download wasmception
         if: matrix.libc == 'wasmception'
         run: |
+          git submodule init
+          git submodule update
           cd wasmception
           make
           cd ..
