@@ -42,17 +42,17 @@ jobs:
           cargo test -- --skip code_benches
 
       - name: Download wasi-sdk
-        if: matrix.libc == "wasi-sdk"
+        if: matrix.libc == 'wasi-sdk'
         run: |
           wget $WASI_SDK_URL -O wasi-sdk.tar.gz
           tar xvfz wasi-sdk.tar.gz
 
       - name: Code benches
-        if: matrix.libc == "wasi-sdk"
+        if: matrix.libc == 'wasi-sdk'
         run: |
           ./code_benches/run.py --debug --${{matrix.libc}}
 
       - name: Results
-        if: matrix.libc == "wasi-sdk"
+        if: matrix.libc == 'wasi-sdk'
         run: |
           cat code_benches/benchmarks.csv
