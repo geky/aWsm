@@ -73,28 +73,27 @@ jobs:
           mkdir -p wasi-sdk
           tar xvfz wasi-sdk.tar.gz --strip-components=1 -C wasi-sdk
 
-#      - name: Compile
-#        run: |
-#          cargo build
+      - name: Compile
+        run: |
+          cargo build
 
-#      - name: Preliminary tests
-#        # note we skip code_benches, we run code_benches/run.py ourselves
-#        # to pass explicit flags
-#        run: |
-#          cargo test -- --skip code_benches
+      - name: Preliminary tests
+        # note we skip code_benches, we run code_benches/run.py ourselves
+        # to pass explicit flags
+        run: |
+          cargo test -- --skip code_benches
 
       - name: Code benches
         run: |
-          #./code_benches/run.py --debug --${{matrix.libc}} -o benchmarks.csv
-          echo "ignore this,hello" >> benchmarks.csv
-          echo "a,11" >> benchmarks.csv
-          echo "b,13" >> benchmarks.csv
-          echo "${{toJson(github)}}"
+          ./code_benches/run.py --debug --${{matrix.libc}} -o benchmarks.csv
+#          echo "ignore this,hello" >> benchmarks.csv
+#          echo "a,11" >> benchmarks.csv
+#          echo "b,13" >> benchmarks.csv
+#          echo "${{toJson(github)}}"
 
       - name: Results
         run: |
           BOT_STATUSES=$(base64 -d <<< "$BOT_STATUSES")
-
           NF=$(awk -F, 'NR==1 {print NF-1}' benchmarks.csv)
           for ((i=0; i<NF; i++))
           do
@@ -118,9 +117,7 @@ jobs:
               STATUS="Runtime: ${RUNTIME}s"
               if awk "BEGIN {exit! $PREV != 0}"
               then
-                  echo "what"
                   STATUS="$STATUS ($(awk "BEGIN {printf \"%+.2f\",100*($RUNTIME-$PREV)/$PREV}")%)"
-                  echo $STATUS
               fi
 
               # Post status
