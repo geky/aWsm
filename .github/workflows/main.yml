@@ -34,8 +34,10 @@ jobs:
       - name: Install wasmception
         if: matrix.libc == 'wasmception'
         run: |
+          sudo apt-get install libtinfo5 --yes
           # TODO why is this needed?
           sudo ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.5 /usr/lib/x86_64-linux-gnu/libtinfo.so.6
+          ls /usr/lib/x86_64-linux-gnu
 
       - uses: actions/checkout@v2
 
