@@ -50,7 +50,7 @@ jobs:
       - name: Code benches
         if: matrix.libc == wasi-sdk
         run: |
-          ./code_benches/run.py --debug --${{libc}}
+          ./code_benches/run.py --debug --${{matrix.libc}}
 
       - name: Results
         if: matrix.libc == wasi-sdk
