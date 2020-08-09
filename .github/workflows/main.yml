@@ -94,8 +94,11 @@ jobs:
       - name: Results
         run: |
           BOT_STATUSES=$(base64 -d <<< "$BOT_STATUSES")
+
+          cat benchmarks.csv
+
           NF=$(awk -F, 'NR==1 {print NF-1}' benchmarks.csv)
-          for ((i=0; i<NF; i++))
+          for ((i=0; i<$NF; i++))
           do
               # find total runtime
               NAME="${{matrix.libc}}-$(awk -F, -vi=$i 'NR==1 {gsub(/ /, "-"); print $(i+2)}' benchmarks.csv)"
