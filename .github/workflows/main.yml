@@ -35,7 +35,7 @@ jobs:
         if: matrix.libc == 'wasmception'
         run: |
           # TODO why is this needed?
-          sudo apt-get install libtinfo-dev --yes
+          sudo apt-get install libtinfo6 --yes
 
       - uses: actions/checkout@v2
 
