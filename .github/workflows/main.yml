@@ -1,0 +1,18 @@
+# CI workflow                                                          
+name: Test                                                             
+on: [push, pull_request]                                               
+                                                                       
+jobs:                                                                  
+  test:                                                                
+    runs-on: ubuntu-latest                                             
+                                                                       
+    steps:                                                             
+    - uses: actions/checkout@v2                                        
+                                                                       
+    - name: Compile                                                    
+      run: cargo build                                                 
+                                                                       
+    - name: Preliminary tests                                          
+      # note we skip code_benches, we run code_benches/run.py ourselves
+      # to pass explicit flags                                         
+      run: cargo test -- --skip code_benches                           
