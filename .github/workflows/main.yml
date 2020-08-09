@@ -96,10 +96,10 @@ jobs:
           BOT_STATUSES=$(base64 -d <<< "$BOT_STATUSES")
 
           NF=$(awk -F, 'NR==1 {print NF-1}' benchmarks.csv)
-          for ((i=1; i<NF+1; i++))
+          for ((i=0; i<NF; i++))
           do
               # find total runtime
-              NAME="${{matrix.libc}}-$(awk -F, -vi=$i 'NR==1 {gsub(/ /, "-"); print $(i+1)}' benchmarks.csv)"
+              NAME="${{matrix.libc}}-$(awk -F, -vi=$i 'NR==1 {gsub(/ /, "-"); print $(i+2)}' benchmarks.csv)"
               RUNTIME=$(awk -F, -vi=$i 'NR>1 {sum += $(i+2)} END {printf "%.3f\n",sum}' benchmarks.csv)
 
               # get previous?
@@ -118,6 +118,7 @@ jobs:
               fi
 
               # Post status
+              echo $STATUS
               curl -u "$BOT_STATUSES" -X POST \
                   https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA \
                   -d "{
