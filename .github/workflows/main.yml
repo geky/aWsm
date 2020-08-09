@@ -109,21 +109,19 @@ jobs:
                       | .statuses[] | select(.context == \"bench/$NAME\").description
                       | capture(\"Runtime: (?<runtime>[0-9\\\\.]+)\").runtime" \
                   || echo 0)
+
               echo NAME=$NAME
               echo RUNTIME=$RUNTIME
               echo PREV=$PREV
 
               # build status
               STATUS="Runtime: ${RUNTIME}s"
-              if [ "$PREV" -ne 0 ]
+              if awk "BEGIN {exit! $PREV != 0}"
               then
-                  echo "what"
                   STATUS="$STATUS ($(awk "BEGIN {printf \"%+.2f\",100*($RUNTIME-$PREV)/$PREV}")%)"
-                  echo $STATUS
               fi
 
               # Post status
-              echo $STATUS
               curl -sS -u "$BOT_STATUSES" -X POST \
                   https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA \
                   -d "{
