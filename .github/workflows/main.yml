@@ -15,9 +15,11 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         libc: [wasmception, wasi-sdk]
+
     steps:
       - name: Install
         run: |
@@ -28,6 +30,12 @@ jobs:
           # not really sure why we need to modify this
           PATH=/usr/bin:$PATH
           llvm-config --version
+
+      - name: Install wasmception
+        if: matrix.libc == 'wasmception'
+        run: |
+          # TODO why is this needed?
+          sudo apt-get install libtinfo-dev --yes
 
       - uses: actions/checkout@v2
 
