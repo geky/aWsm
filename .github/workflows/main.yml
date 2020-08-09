@@ -51,6 +51,7 @@ jobs:
           cp -r wasmception/sysroot wasmception/dist/sysroot
 
       - name: Upload?
+        if: matrix.libc == 'wasmception'
         uses: actions/upload-artifact@v1
         with:
           name: wasmception-1.0
