@@ -102,10 +102,10 @@ jobs:
               RUNTIME=$(awk -F, -vi=$i 'NR>1 {sum += $(i+2)} END {printf "%.3f\n",sum}' benchmarks.csv)
 
               # get previous?
-              PREV=$(curl -u "BOT_STATUSES" https://api.github.com/repos/${{github.repository}}/status/master \
-                  | jq -re "select(.sha != \"${{github.sha}}\")
+              PREV=$(curl -u "$BOT_STATUSES" https://api.github.com/repos/$GITHUB_REPOSITORY/status/master \
+                  | jq -re "select(.sha != \"$GITHUB_SHA\")
                       | .statuses[] | select(.context == \"bench/$NAME\").description
-                      | capture(\"Runtime: (?<runtime>[0-9\\.]+)\").runtime" \
+                      | capture(\"Runtime: (?<runtime>[0-9\\\\.]+)\").runtime" \
                   || echo 0)
 
               # build status
@@ -116,13 +116,14 @@ jobs:
               fi
 
               # Post status
-              curl -u "BOT_STATUSES" -X POST \
-                  https://api.github.com/repos/${{github.repository}}/statuses/${{github.sha}} \
+              curl -u "$BOT_STATUSES" -X POST \A
+                  ${{
+                  https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA \
                   -d "{
                       \"context\": \"bench/$NAME\",
                       \"state\": \"success\",
                       \"description\": \"$STATUS\",
-                      \"target_url\": \"https://github.com/${{github.repository}}/actions/runs/${{github.job}}\"
+                      \"target_url\": \"https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID\"
                   }"
           done
 
