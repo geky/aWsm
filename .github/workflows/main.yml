@@ -44,18 +44,22 @@ jobs:
       - name: Get wasmception
         if: matrix.libc == 'wasmception'
         run: |
-          git submodule update --init --recursive
-          cd wasmception
-          make
-          cd ..
-          cp -r wasmception/sysroot wasmception/dist/sysroot
+          wget $WASMCEPTION_URL -O wasmception.tar.gz
+          mkdir -p wasmception
+          tar xvfz wasmception.tar.gz --strip-components=1 -C wasmception
 
-      - name: Upload?
-        if: matrix.libc == 'wasmception'
-        uses: actions/upload-artifact@v1
-        with:
-          name: wasmception-1.0
-          path: wasmception/dist
+#          git submodule update --init --recursive
+#          cd wasmception
+#          make
+#          cd ..
+#          cp -r wasmception/sysroot wasmception/dist/sysroot
+
+#      - name: Upload?
+#        if: matrix.libc == 'wasmception'
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: wasmception-1.0
+#          path: wasmception/dist
 
 #          wget $WASMCEPTION_URL -O wasmception.tar.gz
 #          mkdir -p wasmception
