@@ -109,6 +109,9 @@ jobs:
                       | .statuses[] | select(.context == \"bench/$NAME\").description
                       | capture(\"Runtime: (?<runtime>[0-9\\\\.]+)\").runtime" \
                   || echo 0)
+              echo NAME=$NAME
+              echo RUNTIME=$RUNTIME
+              echo PREV=$PREV
 
               # build status
               STATUS="Runtime: ${RUNTIME}s"
