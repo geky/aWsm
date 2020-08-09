@@ -117,7 +117,7 @@ jobs:
               echo PREV=$PREV
 
               # build status
-              STATUS="Runtime: ${RUNTIME}s"
+              STATUS="Runtime: ${RUNTIME}x"
               if awk "BEGIN {exit! $PREV != 0}"
               then
                   STATUS="$STATUS ($(awk "BEGIN {printf \"%+.2f\",100*($RUNTIME-$PREV)/$PREV}")%)"
