@@ -117,7 +117,6 @@ jobs:
 
               # Post status
               curl -u "$BOT_STATUSES" -X POST \A
-                  ${{
                   https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA \
                   -d "{
                       \"context\": \"bench/$NAME\",
