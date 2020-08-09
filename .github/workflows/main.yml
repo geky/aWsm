@@ -35,7 +35,7 @@ jobs:
         if: matrix.libc == 'wasmception'
         run: |
           # TODO why is this needed?
-          ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.5 /usr/lib/x86_64-linux-gnu/libtinfo.so.6
+          sudo ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.5 /usr/lib/x86_64-linux-gnu/libtinfo.so.6
 
       - uses: actions/checkout@v2
 
