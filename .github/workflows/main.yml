@@ -21,6 +21,8 @@ jobs:
         libc: [wasmception, wasi-sdk]
 
     steps:
+      - uses: actions/checkout@v2
+
       - name: Install
         run: |
           sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" bash $LLVM_VERSION
@@ -64,8 +66,6 @@ jobs:
           wget $WASI_SDK_URL -O wasi-sdk.tar.gz
           mkdir -p wasi-sdk
           tar xvfz wasi-sdk.tar.gz --strip-components=1 -C wasi-sdk
-
-      - uses: actions/checkout@v2
 
       - name: Compile
         run: |
