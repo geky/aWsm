@@ -97,12 +97,12 @@ jobs:
 
           cat benchmarks.csv
 
-          NF=$(awk -F, 'NR==1 {print NF-1}' benchmarks.csv)
-          for ((i=0; i<$NF; i++))
+          NF=$(awk -F, 'NR==1 {print NF}' benchmarks.csv)
+          for ((i=2; i<$NF; i++))
           do
               # find total runtime
-              NAME="${{matrix.libc}}-$(awk -F, -vi=$i 'NR==1 {gsub(/ /, "-"); print $(i+2)}' benchmarks.csv)"
-              RUNTIME=$(awk -F, -vi=$i 'NR>1 {sum += $(i+2)} END {printf "%.3f\n",sum}' benchmarks.csv)
+              NAME="${{matrix.libc}}-$(awk -F, -vi=$i 'NR==1 {gsub(/ /, "-"); print $(i+1)}' benchmarks.csv)"
+              RUNTIME=$(awk -F, -vi=$i 'NR>1 {sum += $(i+1)} END {printf "%.3f\n",sum/(NR-1)}' benchmarks.csv)
 
               # get previous?
               PREV=$(curl -sS -u "$BOT_STATUSES" \
