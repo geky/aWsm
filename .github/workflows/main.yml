@@ -87,8 +87,8 @@ jobs:
         run: |
           #./code_benches/run.py --debug --${{matrix.libc}} -o benchmarks.csv
           echo "ignore this,hello" >> benchmarks.csv
-          echo "a,10" >> benchmarks.csv
-          echo "b,12" >> benchmarks.csv
+          echo "a,11" >> benchmarks.csv
+          echo "b,13" >> benchmarks.csv
           echo "${{toJson(github)}}"
 
       - name: Results
