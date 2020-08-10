@@ -109,7 +109,7 @@ jobs:
                   https://api.github.com/repos/$GITHUB_REPOSITORY/status/master \
                   | jq -re "select(.sha != \"$GITHUB_SHA\")
                       | .statuses[] | select(.context == \"bench/$NAME\").description
-                      | capture(\"Runtime is (?<runtime>[0-9\\\\.]+)\").runtime" \
+                      | capture(\"(?<runtime>[0-9\\\\.]+)\").runtime" \
                   || echo 0)
 
               echo NAME=$NAME
@@ -117,7 +117,7 @@ jobs:
               echo PREV=$PREV
 
               # build status
-              STATUS="Runtime is ${RUNTIME}x native"
+              STATUS="${RUNTIME}x native"
               if awk "BEGIN {exit! $PREV != 0}"
               then
                   STATUS="$STATUS ($(awk "BEGIN {printf \"%+.2f\",100*($RUNTIME-$PREV)/$PREV}")%)"
