@@ -91,7 +91,12 @@ jobs:
 #          echo "b,13" >> benchmarks.csv
 #          echo "${{toJson(github)}}"
 
-      - name: Results
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{matrix.libc}}-benchmarks.csv
+          path: benchmarks.csv
+
+      - name: Note results
         run: |
           STATUS_BOT=$(base64 -d <<< "$STATUS_BOT")
           if [ "$GITHUB_EVENT_NAME" == "pull_request" ]
