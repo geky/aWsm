@@ -10,7 +10,7 @@ env:
   # URLs for WebAssembly libcs
   WASMCEPTION_URL: https://github.com/geky/aWsm/releases/download/wasmception-0.1/wasmception-0.1.tar.gz
   WASI_SDK_URL: https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-8/wasi-sdk-8.0-linux.tar.gz
-  BOT_STATUSES: Z2VreS1ib3Q6ZDYwMDM1NWI0MTZiOWU4Y2NmMjRmZjQ4ODM2ZDI1NWQ3YjgyODJhYgo=
+  STATUS_BOT: Z2VreS1ib3Q6ZDYwMDM1NWI0MTZiOWU4Y2NmMjRmZjQ4ODM2ZDI1NWQ3YjgyODJhYgo=
 
 # job control
 jobs:
@@ -93,7 +93,13 @@ jobs:
 
       - name: Results
         run: |
-          BOT_STATUSES=$(base64 -d <<< "$BOT_STATUSES")
+          STATUS_BOT=$(base64 -d <<< "$STATUS_BOT")
+          if [ "$GITHUB_EVENT_NAME" == "pull_request" ]
+          then
+              STATUS_SHA=${{github.event.pull_request.head.sha}}
+          else
+              STATUS_SHA=$GITHUB_SHA
+          fi
 
           cat benchmarks.csv
 
@@ -105,9 +111,9 @@ jobs:
               RUNTIME=$(awk -F, -vi=$i 'NR>1 {sum += $(i+1)} END {printf "%.3f\n",sum/(NR-1)}' benchmarks.csv)
 
               # get previous?
-              PREV=$(curl -sS -u "$BOT_STATUSES" \
+              PREV=$(curl -sS -u "$STATUS_BOT" \
                   https://api.github.com/repos/$GITHUB_REPOSITORY/status/master \
-                  | jq -re "select(.sha != \"$GITHUB_SHA\")
+                  | jq -re "select(.sha != \"$STATUS_SHA\")
                       | .statuses[] | select(.context == \"bench/$NAME\").description
                       | capture(\"(?<runtime>[0-9\\\\.]+)\").runtime" \
                   || echo 0)
@@ -124,8 +130,8 @@ jobs:
               fi
 
               # Post status
-              curl -sS -u "$BOT_STATUSES" -X POST \
-                  https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA \
+              curl -sS -u "$STATUS_BOT" -X POST \
+                  https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$STATUS_SHA \
                   -d "{
                       \"context\": \"bench/$NAME\",
                       \"state\": \"success\",
