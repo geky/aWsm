@@ -99,7 +99,7 @@ jobs:
           name: ${{matrix.libc}}-benchmarks
           path: benchmarks.csv
 
-      - name: Note results
+      - name: Update statuses
         run: |
           if [ "$GITHUB_EVENT_NAME" == "pull_request" ]
           then
@@ -107,7 +107,7 @@ jobs:
           else
               COMMIT_SHA=$GITHUB_SHA
           fi
-          BOT_TOKEN_STATUSES=$(curl -sS
+          BOT_TOKEN_STATUSES=$(curl -sS \
                   https://api.github.com/gists/"$BOT_TOKEN" \
                   | jq -re ".files | .[].content" | base64 -d | jq -re ".statuses" \
               ) || true
