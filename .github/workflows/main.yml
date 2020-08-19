@@ -3,14 +3,13 @@ name: test
 on: [push, pull_request]
 
 env:
-  # rust equivalent of -Werror
+  # Rust equivalent of -Werror
   RUSTFLAGS: --deny warnings
   # used during LLVM installation
   LLVM_VERSION: 9
   # URLs for WebAssembly libcs
   WASMCEPTION_URL: https://github.com/geky/aWsm/releases/download/wasmception-0.1/wasmception-0.1.tar.gz
   WASI_SDK_URL: https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-8/wasi-sdk-8.0-linux.tar.gz
-  BOT_TOKEN: e8ce688fb58cea7c4ee2120beba7820f
 
 # job control
 jobs:
@@ -34,37 +33,12 @@ jobs:
           PATH=/usr/bin:$PATH
           llvm-config --version
 
-#      - name: Install wasmception
-#        if: matrix.libc == 'wasmception'
-#        run: |
-#          sudo apt-get install libtinfo5 --yes
-#          # TODO why is this needed?
-#          sudo ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so /usr/lib/x86_64-linux-gnu/libtinfo.so.6
-#          ls /usr/lib/x86_64-linux-gnu
-
       - name: Get wasmception
         if: matrix.libc == 'wasmception'
         run: |
           wget $WASMCEPTION_URL -O wasmception.tar.gz
           mkdir -p wasmception
           tar xvfz wasmception.tar.gz --strip-components=1 -C wasmception
-
-#          git submodule update --init --recursive
-#          cd wasmception
-#          make
-#          cd ..
-#          cp -r wasmception/sysroot wasmception/dist/sysroot
-
-#      - name: Upload?
-#        if: matrix.libc == 'wasmception'
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: wasmception-1.0
-#          path: wasmception/dist
-
-#          wget $WASMCEPTION_URL -O wasmception.tar.gz
-#          mkdir -p wasmception
-#          tar xvfz wasmception.tar.gz --strip-components=1 -C wasmception
 
       - name: Get wasi-sdk
         if: matrix.libc == 'wasi-sdk'
@@ -78,7 +52,7 @@ jobs:
           cargo build
 
       - name: Preliminary tests
-        # note we skip code_benches, we run code_benches/run.py ourselves
+        # note we skip code_benches; we run code_benches/run.py ourselves
         # to pass explicit flags
         run: |
           cargo test -- --skip code_benches
@@ -86,10 +60,6 @@ jobs:
       - name: Code benches
         run: |
           ./code_benches/run.py --debug --${{matrix.libc}} -o benchmarks.csv
-#          echo "ignore this,hello" >> benchmarks.csv
-#          echo "a,11" >> benchmarks.csv
-#          echo "b,13" >> benchmarks.csv
-#          echo "${{toJson(github)}}"
 
       - name: Results
         run: cat benchmarks.csv
@@ -98,54 +68,4 @@ jobs:
         with:
           name: ${{matrix.libc}}-benchmarks
           path: benchmarks.csv
-
-      - name: Update statuses
-        run: |
-          if [ "$GITHUB_EVENT_NAME" == "pull_request" ]
-          then
-              COMMIT_SHA=${{github.event.pull_request.head.sha}}
-          else
-              COMMIT_SHA=$GITHUB_SHA
-          fi
-          BOT_TOKEN_STATUSES=$(curl -sS \
-                  https://api.github.com/gists/"$BOT_TOKEN" \
-                  | jq -re ".files | .[].content" | base64 -d | jq -re ".statuses" \
-              ) || true
-
-          NF=$(awk -F, 'NR==1 {print NF}' benchmarks.csv)
-          for ((i=2; i<$NF; i++))
-          do
-              # find total runtime
-              NAME="${{matrix.libc}}-$(awk -F, -vi=$i 'NR==1 {gsub(/ /, "-"); gsub(/\<wasm-/, ""); print $(i+1)}' benchmarks.csv)"
-              RUNTIME=$(awk -F, -vi=$i 'NR>1 {sum += $(i+1)} END {printf "%.3f\n",sum/(NR-1)}' benchmarks.csv)
-
-              # get previous?
-              PREV=$(curl -sS -u "$BOT_TOKEN_STATUSES" \
-                  https://api.github.com/repos/$GITHUB_REPOSITORY/status/master \
-                  | jq -re "select(.sha != \"$COMMIT_SHA\")
-                      | .statuses[] | select(.context == \"bench/$NAME\").description
-                      | capture(\"(?<runtime>[0-9\\\\.]+)\").runtime" \
-                  || echo 0)
-
-              echo NAME=$NAME
-              echo RUNTIME=$RUNTIME
-              echo PREV=$PREV
-
-              # build status
-              STATUS="${RUNTIME}x native"
-              if awk "BEGIN {exit! $PREV != 0}"
-              then
-                  STATUS="$STATUS ($(awk "BEGIN {printf \"%+.2f\",100*($RUNTIME-$PREV)/$PREV}")%)"
-              fi
-
-              # Post status
-              curl -sS -u "$BOT_TOKEN_STATUSES" -X POST \
-                  https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$COMMIT_SHA \
-                  -d "{
-                      \"context\": \"bench/$NAME\",
-                      \"state\": \"success\",
-                      \"description\": \"$STATUS\",
-                      \"target_url\": \"https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID\"
-                  }"
-          done
 
